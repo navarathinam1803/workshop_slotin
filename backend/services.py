@@ -126,6 +126,20 @@ def cancel_booking(booking_id: str) -> tuple[dict | None, str, dict | None]:
     return booking, "cancelled", promoted
 
 
+def mark_no_show(booking_id: str) -> tuple[dict | None, str]:
+    """
+    Mark a confirmed booking as no-show. No seat freed; no waitlist promotion.
+    Returns (booking, outcome) where outcome is "ok" | "not_found" | "invalid_state".
+    """
+    booking = get_booking_by_id(booking_id)
+    if not booking:
+        return None, "not_found"
+    if booking.get("state") != "confirmed":
+        return None, "invalid_state"
+    update_booking_state(booking_id, "no_show", None)
+    return booking, "ok"
+
+
 def load_workshops() -> list[dict]:
     """Load workshops from JSON file. Returns list of dicts (id, title, date_time, capacity)."""
     path = Path(WORKSHOPS_JSON)

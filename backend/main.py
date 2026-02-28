@@ -10,6 +10,7 @@ from services import (
     get_bookings_by_email,
     get_bookings_by_workshop,
     load_workshops,
+    mark_no_show,
     request_seat,
 )
 
@@ -93,6 +94,37 @@ def cancel_booking_endpoint(booking_id: str):
     if refund is not None:
         content["refund_percentage"] = refund["refund_percentage"]
     return content
+
+
+@app.get("/admin/bookings")
+def list_admin_bookings():
+    """Return all confirmed bookings with workshop_title and workshop_date_time (for admin page)."""
+    workshops = load_workshops()
+    workshops_by_id = {w["id"]: w for w in workshops}
+    result = []
+    for ws in workshops:
+        for b in get_bookings_by_workshop(ws["id"]):
+            if b.get("state") == "confirmed":
+                result.append({
+                    "id": b["id"],
+                    "workshop_id": b["workshop_id"],
+                    "email": b["email"],
+                    "state": b["state"],
+                    "workshop_title": workshops_by_id.get(b["workshop_id"], {}).get("title", ""),
+                    "workshop_date_time": workshops_by_id.get(b["workshop_id"], {}).get("date_time"),
+                })
+    return result
+
+
+@app.post("/admin/bookings/{booking_id}/no-show")
+def no_show_endpoint(booking_id: str):
+    """Mark confirmed booking as no-show. No seat freed; no waitlist promotion."""
+    booking, outcome = mark_no_show(booking_id)
+    if outcome == "not_found":
+        raise HTTPException(status_code=404, detail="Booking not found")
+    if outcome == "invalid_state":
+        raise HTTPException(status_code=400, detail="Only confirmed bookings can be marked no-show")
+    return {"marked_no_show": True, "booking_id": booking["id"], "state": "no_show"}
 
 
 @app.get("/bookings")

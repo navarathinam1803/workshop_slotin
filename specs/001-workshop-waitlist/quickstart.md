@@ -8,7 +8,7 @@ Minimal steps to run and manually test the feature after implementation.
 
 - Python 3.10+
 - Node 18+ and npm (or pnpm/yarn)
-- (Optional) `.env` in backend root for any API keys (e.g. notification service); not required for core flows.
+- (Optional) `.env` in backend root for any API keys (e.g. notification service); not required for core flows. See `backend/.env.example` for placeholders.
 
 ## Backend
 

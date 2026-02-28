@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { getMyBookings } from '../services/api'
+import { cancelBooking, getMyBookings } from '../services/api'
 
 function formatDateTime(iso) {
   if (!iso) return '—'
@@ -16,6 +16,7 @@ export default function MyBookings() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [bookings, setBookings] = useState(null)
+  const [cancellingId, setCancellingId] = useState(null)
 
   async function handleLoad(e) {
     e.preventDefault()
@@ -30,6 +31,22 @@ export default function MyBookings() {
       setError(err.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleCancel(bookingId) {
+    setError(null)
+    setCancellingId(bookingId)
+    try {
+      await cancelBooking(bookingId)
+      if (email.trim()) {
+        const data = await getMyBookings(email.trim())
+        setBookings(data)
+      }
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setCancellingId(null)
     }
   }
 
@@ -78,6 +95,16 @@ export default function MyBookings() {
                     <> · position {b.position}</>
                   )}
                 </p>
+                {(b.state === 'confirmed' || b.state === 'waitlisted') && (
+                  <button
+                    type="button"
+                    onClick={() => handleCancel(b.id)}
+                    disabled={cancellingId === b.id}
+                    className="mt-2 rounded border border-red-300 bg-white px-2 py-1 text-xs font-medium text-red-700 hover:bg-red-50 disabled:opacity-50"
+                  >
+                    {cancellingId === b.id ? 'Cancelling…' : 'Cancel booking'}
+                  </button>
+                )}
               </li>
             ))
           )}

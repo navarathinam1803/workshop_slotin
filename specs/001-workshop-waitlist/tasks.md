@@ -85,7 +85,7 @@
 
 - [x] T021 [US3] Implement cancel booking + promote first waitlisted + trigger notification stub in backend/services.py
 - [x] T022 [US3] Implement POST /bookings/{booking_id}/cancel (or cancel by workshop+email) in backend/main.py
-- [ ] T023 [US3] Add cancelBooking() to frontend API client and cancel button/action in my-bookings or booking detail UI in frontend/src/
+- [x] T023 [US3] Add cancelBooking() to frontend API client and cancel button/action in my-bookings or booking detail UI in frontend/src/
 
 **Checkpoint**: User Stories 1–3 complete — waitlist promotion and cancel work
 

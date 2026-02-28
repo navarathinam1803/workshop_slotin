@@ -29,3 +29,14 @@ export async function getMyBookings(email) {
   if (!res.ok) throw new Error(`My bookings: ${res.status}`);
   return res.json();
 }
+
+export async function cancelBooking(bookingId) {
+  const res = await fetch(`${API_BASE}/bookings/${bookingId}/cancel`, {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `Cancel booking: ${res.status}`);
+  }
+  return res.json();
+}

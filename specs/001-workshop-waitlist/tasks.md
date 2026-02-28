@@ -69,7 +69,7 @@
 - [x] T015 [US2] Implement request-seat logic (confirm or waitlist, first-request-wins) in backend/services.py
 - [x] T016 [US2] Implement POST /workshops/{workshop_id}/request-seat with email body in backend/main.py
 - [x] T017 [US2] Implement GET /bookings?email= in backend/main.py returning user's bookings with workshop summary
-- [ ] T018 [US2] Add requestSeat() and getMyBookings(email) to frontend/src/services/api.js
+- [x] T018 [US2] Add requestSeat() and getMyBookings(email) to frontend/src/services/api.js
 - [ ] T019 [US2] Create RequestSeatForm component (workshop, email input) and My Bookings view in frontend/src/components/
 - [ ] T020 [US2] Wire request-seat flow (from workshop list or detail) and my-bookings page (email input → list) in frontend
 

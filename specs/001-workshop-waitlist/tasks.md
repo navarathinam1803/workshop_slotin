@@ -35,7 +35,7 @@
 **Purpose**: Core backend and API foundation; MUST be complete before any user story
 
 - [x] T005 [P] Create Pydantic models (Workshop, Booking, request/response DTOs) in backend/models.py
-- [ ] T006 Implement workshop load/save from JSON file in backend/services.py (workshops.json path configurable)
+- [x] T006 Implement workshop load/save from JSON file in backend/services.py (workshops.json path configurable)
 - [ ] T007 Implement in-memory bookings store and accessors in backend/services.py
 - [ ] T008 Create FastAPI app with CORS and base health route in backend/main.py
 - [ ] T009 Seed backend/workshops.json with at least one sample workshop (id, title, date_time, capacity)

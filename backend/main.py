@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 
 from models import RequestSeatRequest
 from services import (
+    cancel_booking,
     get_bookings_by_email,
     get_bookings_by_workshop,
     load_workshops,
@@ -70,6 +71,24 @@ def request_seat_endpoint(workshop_id: str, body: RequestSeatRequest):
         "position": booking.get("position"),
     }
     return JSONResponse(content=content, status_code=status)
+
+
+@app.post("/bookings/{booking_id}/cancel")
+def cancel_booking_endpoint(booking_id: str):
+    """Cancel a booking. If was confirmed and waitlist non-empty, first waitlisted is promoted."""
+    cancelled, outcome, promoted = cancel_booking(booking_id)
+    if outcome == "not_found":
+        raise HTTPException(status_code=404, detail="Booking not found")
+    if outcome == "invalid_state":
+        raise HTTPException(status_code=400, detail="Booking cannot be cancelled")
+    content = {
+        "cancelled": True,
+        "booking_id": cancelled["id"],
+        "state": "cancelled",
+    }
+    if promoted:
+        content["promoted_booking_id"] = promoted["id"]
+    return content
 
 
 @app.get("/bookings")

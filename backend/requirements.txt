@@ -1,0 +1,5 @@
+# Workshop SlotIn backend (specs/001-workshop-waitlist)
+# Constitution: Python 3.10+, FastAPI, Pydantic v2
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+pydantic>=2.5.0

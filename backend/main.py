@@ -1,8 +1,10 @@
 # Workshop SlotIn — FastAPI app and routes (specs/001-workshop-waitlist)
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-from services import get_bookings_by_workshop, load_workshops
+from models import RequestSeatRequest
+from services import get_bookings_by_workshop, load_workshops, request_seat
 
 app = FastAPI(
     title="Workshop SlotIn API",
@@ -44,3 +46,22 @@ def list_workshops():
             "waitlisted_count": waitlisted_count,
         })
     return result
+
+
+@app.post("/workshops/{workshop_id}/request-seat")
+def request_seat_endpoint(workshop_id: str, body: RequestSeatRequest):
+    """Request a seat: 201 confirmed, 202 waitlisted; 404 workshop not found, 409 already booked."""
+    booking, outcome = request_seat(workshop_id, body.email)
+    if outcome == "not_found":
+        raise HTTPException(status_code=404, detail="Workshop not found")
+    if outcome == "already_booked":
+        raise HTTPException(status_code=409, detail="Already have a booking for this workshop")
+    status = 201 if outcome == "confirmed" else 202
+    content = {
+        "booking_id": booking["id"],
+        "state": booking["state"],
+        "workshop_id": booking["workshop_id"],
+        "email": booking["email"],
+        "position": booking.get("position"),
+    }
+    return JSONResponse(content=content, status_code=status)

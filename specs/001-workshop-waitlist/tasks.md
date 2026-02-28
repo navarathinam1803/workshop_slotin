@@ -52,7 +52,7 @@
 **Independent Test**: Load app → workshop list displays with correct counts; confirmed ≤ capacity.
 
 - [x] T011 [P] [US1] Implement GET /workshops (or /api/workshops) returning list with counts in backend/main.py
-- [ ] T012 [US1] Add getWorkshops() to frontend API client in frontend/src/services/api.js (or .ts)
+- [x] T012 [US1] Add getWorkshops() to frontend API client in frontend/src/services/api.js (or .ts)
 - [ ] T013 [US1] Create WorkshopList component in frontend/src/components/WorkshopList.jsx (or .tsx)
 - [ ] T014 [US1] Wire home page to fetch and display workshop list (title, date_time, capacity, confirmed_count, waitlisted_count) in frontend/src/App.jsx or pages/Home.jsx
 

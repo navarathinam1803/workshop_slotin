@@ -174,10 +174,11 @@ def _parse_workshop_start(date_time: str | None) -> datetime | None:
         return None
 
 
-def compute_refund(workshop_id: str) -> dict | None:
+def compute_refund(workshop_id: str, *, now: datetime | None = None) -> dict | None:
     """
     Compute refund for a cancellation now. ≥24h before start = pro-rata (e.g. 7 days = 100%, 3 days = 50%);
     <24h = no refund. Returns {"refund_percentage": int} or None when workshop not found / no date.
+    Optional `now` for testing; defaults to datetime.utcnow().
     """
     workshops = load_workshops()
     workshop = next((w for w in workshops if w.get("id") == workshop_id), None)
@@ -186,7 +187,8 @@ def compute_refund(workshop_id: str) -> dict | None:
     start = _parse_workshop_start(workshop.get("date_time"))
     if not start:
         return None
-    now = datetime.utcnow()
+    if now is None:
+        now = datetime.utcnow()
     hours_until = (start - now).total_seconds() / 3600
     if hours_until < REFUND_WINDOW_HOURS:
         return {"refund_percentage": 0}

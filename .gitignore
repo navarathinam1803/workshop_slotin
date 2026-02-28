@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Build / dist
+frontend/dist/
+*.egg-info/
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+.env.local
+*.log
+.DS_Store

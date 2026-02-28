@@ -25,7 +25,7 @@
 
 - [x] T001 Create backend/ and frontend/ directory structure per plan (backend/main.py, services.py, models.py, tests/; frontend/src with components, pages, services, context)
 - [x] T002 Initialize backend with FastAPI, uvicorn, pydantic in backend/ (requirements.txt or pyproject.toml)
-- [ ] T003 Initialize frontend with Vite React, Tailwind CSS, Lucide React in frontend/
+- [x] T003 Initialize frontend with Vite React, Tailwind CSS, Lucide React in frontend/
 - [ ] T004 [P] Configure backend formatting (black, ruff) and frontend Prettier
 
 ---

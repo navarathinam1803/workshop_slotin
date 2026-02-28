@@ -4,5 +4,17 @@
     "title": "Intro to Spec-Driven Development",
     "date_time": "2026-03-15T14:00:00",
     "capacity": 20
+  },
+  {
+    "id": "ws-002",
+    "title": "Advanced Spec-Driven Development",
+    "date_time": "2026-03-22T14:00:00",
+    "capacity": 20
+  },
+  {
+    "id": "ws-003",
+    "title": "Expert Spec-Driven Development",
+    "date_time": "2026-03-29T14:00:00",
+    "capacity": 20
   }
 ]

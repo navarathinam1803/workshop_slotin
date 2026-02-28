@@ -5,6 +5,16 @@
 **Status**: Draft  
 **Input**: User description: "Workshop SlotIn is a workshop sign-up app with waitlist and slot-release behavior. Workshop catalog; sign-up & waitlist; slot released; cancellation & refund; no-show; notifications backend only. Constraints: No Redux, no auth, in-memory or JSON, frontend API only."
 
+## Clarifications
+
+### Session 2026-03-01
+
+- Q: How should the app identify a participant without authentication (for "my bookings" and waitlist position)? → A: Email (no password). User enters email to request a seat; backend links bookings to that email. No login, but we store contact info for notifications.
+- Q: When two users request the last available seat at the same time, how should the system decide who gets the seat? → A: First request accepted by server wins. Whichever request the backend processes first gets the seat; the other is added to the waitlist.
+- Q: When a user cancels within the refund window, should the refund be full or partial? → A: Pro-rata by time. Refund amount depends on how far in advance they cancel (e.g. 7 days = full refund, 3 days = 50%).
+- Q: How should the system distinguish an admin for the no-show action without authentication? → A: Same app, admin route/link only (e.g. /admin or "Admin" link). No login; anyone who opens the admin entry can mark no-show (demo trust).
+- Q: Should workshop and booking data survive a backend server restart? → A: Hybrid. Workshops are persisted (e.g. local JSON/file); bookings can be in-memory only.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Browse Workshops & See Availability (Priority: P1)
@@ -72,7 +82,7 @@ A user may cancel a confirmed booking. If they cancel within the refund window (
 
 ### User Story 5 - No-Show Handling (Priority: P5)
 
-An admin (or post-event process) can mark a confirmed participant as no-show. The system records the no-show and does not free the seat for waitlist promotion (the slot was consumed). Optional: admin action triggers internal reporting via backend.
+An admin can mark a confirmed participant as no-show via a separate admin entry in the same app (e.g. `/admin` or "Admin" link). No login; access is implicit trust for the demo. The system records the no-show and does not free the seat for waitlist promotion (the slot was consumed). Optional: admin action triggers internal reporting via backend.
 
 **Why this priority**: Operational clarity and reporting; does not block core sign-up or waitlist flows.
 
@@ -80,14 +90,14 @@ An admin (or post-event process) can mark a confirmed participant as no-show. Th
 
 **Acceptance Scenarios**:
 
-1. **Given** a confirmed participant did not attend, **When** an admin marks them as no-show, **Then** the system records the no-show and does not promote from the waitlist or free the seat for new sign-ups.
+1. **Given** a confirmed participant did not attend, **When** a user opens the admin entry (e.g. /admin) and marks them as no-show, **Then** the system records the no-show and does not promote from the waitlist or free the seat for new sign-ups.
 2. **Given** a no-show is recorded, **When** reporting or analytics are requested, **Then** the backend may include this in internal reporting (optional).
 
 ---
 
 ### Edge Cases
 
-- What happens when two users request the last available seat at the same time? (Single seat allocated to one; the other joins waitlist.)
+- What happens when two users request the last available seat at the same time? (First request accepted by the server wins; that user is confirmed and the other is added to the waitlist.)
 - What happens when the only confirmed user cancels and the waitlist has multiple users? (First waitlisted is promoted; others remain in order.)
 - How does the system handle cancellation exactly at the refund-window boundary (e.g. exactly 24h before)? (Define as inclusive: ≥24h qualifies for refund.)
 - What if a promoted waitlist user’s notification fails? (Backend handles retry/error; user still has confirmed status in the system.)
@@ -98,22 +108,22 @@ An admin (or post-event process) can mark a confirmed participant as no-show. Th
 
 - **FR-001**: The system SHALL list workshops with title, date/time, capacity, current confirmed count, and current waitlisted count.
 - **FR-002**: The system SHALL enforce a maximum capacity per workshop (confirmed participants shall not exceed capacity).
-- **FR-003**: WHEN a user requests a seat and capacity is available, THE system SHALL confirm the booking and increment the confirmed count.
-- **FR-004**: WHEN a user requests a seat and the workshop is full, THE system SHALL add the user to the waitlist and return their position and workshop details.
+- **FR-003**: WHEN a user requests a seat (supplying a valid email) and capacity is available, THE system SHALL confirm the booking, associate it with that email, and increment the confirmed count.
+- **FR-004**: WHEN a user requests a seat (supplying a valid email) and the workshop is full, THE system SHALL add the user to the waitlist keyed by that email and return their position and workshop details.
 - **FR-005**: WHILE a user is on the waitlist, THE system SHALL display their position and workshop details when they view their bookings.
 - **FR-006**: WHEN a confirmed participant cancels and the waitlist is non-empty, THE system SHALL promote the first waitlisted user to confirmed and trigger a "slot released" notification via the backend only.
 - **FR-007**: WHEN a confirmed participant cancels and the waitlist is empty, THE system SHALL free the seat so it is available for new sign-ups.
-- **FR-008**: IF a user cancels at least 24 hours before the workshop start time (refund window), THE system SHALL process a refund per policy and record the cancellation.
+- **FR-008**: IF a user cancels within the refund window (at least 24 hours before workshop start), THE system SHALL process a refund on a pro-rata-by-time basis (e.g. 7 days before = full refund, 3 days before = 50%) and record the cancellation.
 - **FR-009**: IF a user cancels less than 24 hours before the workshop start time (last-minute), THE system SHALL record the cancellation and SHALL NOT grant a refund.
-- **FR-010**: IF a confirmed participant is marked no-show, THE system SHALL record the no-show and SHALL NOT free the seat for waitlist promotion.
+- **FR-010**: IF a confirmed participant is marked no-show (via the in-app admin entry, e.g. /admin, no login), THE system SHALL record the no-show and SHALL NOT free the seat for waitlist promotion.
 - **FR-011**: All email, calendar, or other notifications SHALL be sent by the backend only; the frontend SHALL NOT call external notification APIs.
-- **FR-012**: The frontend SHALL only read and update data via the backend API (list workshops, request seat, cancel, view my bookings and waitlist position).
+- **FR-012**: The frontend SHALL only read and update data via the backend API (list workshops, request seat with email, cancel, view my bookings by email and waitlist position).
 
 ### Key Entities
 
-- **Workshop**: Represents a single workshop event; attributes include title, date/time, capacity, and derived counts (confirmed, waitlisted). Identified by a stable ID.
-- **Booking (registration)**: A user’s request for a seat; can be in state confirmed, waitlisted, cancelled, or no-show. For waitlisted, position is stored.
-- **Refund window**: Policy boundary (e.g. 24 hours before workshop start); cancellations on or after this boundary are eligible for refund; inside the window (last-minute) are not.
+- **Workshop**: Represents a single workshop event; attributes include title, date/time, capacity, and derived counts (confirmed, waitlisted). Identified by a stable ID. Persisted to disk (e.g. local JSON); survives server restart.
+- **Booking (registration)**: A user’s request for a seat; keyed by participant email (no password/login). Can be in state confirmed, waitlisted, cancelled, or no-show. For waitlisted, position is stored. Backend uses email to link bookings and to send notifications. May be in-memory only (data lost on server restart).
+- **Refund window**: At least 24 hours before workshop start. Cancellations within this window receive a pro-rata refund (e.g. 7 days before = full, 3 days before = 50%). Cancellations inside the last 24 hours (last-minute) receive no refund.
 
 ## Success Criteria *(mandatory)*
 
@@ -127,7 +137,8 @@ An admin (or post-event process) can mark a confirmed participant as no-show. Th
 
 ## Assumptions
 
-- **Refund window** is defined as 24 hours before the workshop’s scheduled start time (configurable later if needed).
-- **No authentication**: participants are identified by a simple client-side or session identifier for demo purposes; no login/accounts.
+- **Refund window** is 24 hours before the workshop’s scheduled start time. Refunds within the window are pro-rata by time (e.g. 7 days before = full, 3 days before = 50%); exact tiers are configurable.
+- **Participant identity**: participants are identified by email only (no password or login). User enters email when requesting a seat; backend links all bookings and notifications to that email; "my bookings" is retrieved by supplying the same email.
 - **Single promoter per cancellation**: when one seat frees, exactly one waitlisted user is promoted (first in order).
 - Notifications are "triggered" by the backend; actual delivery mechanism (email, etc.) is out of scope for MVP but must not be implemented in the frontend.
+- **Persistence (hybrid)**: Workshop data is persisted to disk (e.g. local JSON or file) and survives server restart. Booking data may be in-memory only and is lost on restart.

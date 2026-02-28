@@ -70,8 +70,8 @@
 - [x] T016 [US2] Implement POST /workshops/{workshop_id}/request-seat with email body in backend/main.py
 - [x] T017 [US2] Implement GET /bookings?email= in backend/main.py returning user's bookings with workshop summary
 - [x] T018 [US2] Add requestSeat() and getMyBookings(email) to frontend/src/services/api.js
-- [ ] T019 [US2] Create RequestSeatForm component (workshop, email input) and My Bookings view in frontend/src/components/
-- [ ] T020 [US2] Wire request-seat flow (from workshop list or detail) and my-bookings page (email input → list) in frontend
+- [x] T019 [US2] Create RequestSeatForm component (workshop, email input) and My Bookings view in frontend/src/components/
+- [x] T020 [US2] Wire request-seat flow (from workshop list or detail) and my-bookings page (email input → list) in frontend
 
 **Checkpoint**: User Stories 1 and 2 complete — sign-up and my bookings work
 

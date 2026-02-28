@@ -39,7 +39,7 @@
 - [x] T007 Implement in-memory bookings store and accessors in backend/services.py
 - [x] T008 Create FastAPI app with CORS and base health route in backend/main.py
 - [x] T009 Seed backend/workshops.json with at least one sample workshop (id, title, date_time, capacity)
-- [ ] T010 [P] Add pytest and test layout in backend/tests/ (test_services.py placeholder)
+- [x] T010 [P] Add pytest and test layout in backend/tests/ (test_services.py placeholder)
 
 **Checkpoint**: Foundation ready — user story implementation can begin
 

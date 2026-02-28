@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react'
+import MyBookings from './components/MyBookings'
+import RequestSeatForm from './components/RequestSeatForm'
 import WorkshopList from './components/WorkshopList'
 import { getWorkshops } from './services/api'
 
@@ -6,6 +8,7 @@ function App() {
   const [workshops, setWorkshops] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [requestSeatWorkshop, setRequestSeatWorkshop] = useState(null)
 
   useEffect(() => {
     getWorkshops()
@@ -24,8 +27,24 @@ function App() {
         <p className="mt-4 text-red-600">Failed to load workshops: {error}</p>
       )}
       {!loading && !error && (
-        <div className="mt-6">
-          <WorkshopList workshops={workshops} />
+        <div className="mt-6 space-y-8">
+          <section>
+            <WorkshopList
+              workshops={workshops}
+              onRequestSeat={setRequestSeatWorkshop}
+            />
+          </section>
+          {requestSeatWorkshop && (
+            <section>
+              <RequestSeatForm
+                workshop={requestSeatWorkshop}
+                onClose={() => setRequestSeatWorkshop(null)}
+              />
+            </section>
+          )}
+          <section>
+            <MyBookings />
+          </section>
         </div>
       )}
     </div>

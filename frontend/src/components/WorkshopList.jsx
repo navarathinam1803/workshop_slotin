@@ -10,7 +10,7 @@ function formatDateTime(iso) {
   }
 }
 
-export default function WorkshopList({ workshops = [] }) {
+export default function WorkshopList({ workshops = [], onRequestSeat }) {
   return (
     <ul className="space-y-4">
       {workshops.map((ws) => (
@@ -28,6 +28,15 @@ export default function WorkshopList({ workshops = [] }) {
               <> · {ws.waitlisted_count} waitlisted</>
             )}
           </p>
+          {onRequestSeat && (
+            <button
+              type="button"
+              onClick={() => onRequestSeat(ws)}
+              className="mt-3 rounded bg-slate-800 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700"
+            >
+              Request seat
+            </button>
+          )}
         </li>
       ))}
     </ul>

@@ -83,7 +83,7 @@
 
 **Independent Test**: Cancel confirmed when waitlist non-empty → first promoted, notification triggered; cancel when waitlist empty → seat available for new requests.
 
-- [ ] T021 [US3] Implement cancel booking + promote first waitlisted + trigger notification stub in backend/services.py
+- [x] T021 [US3] Implement cancel booking + promote first waitlisted + trigger notification stub in backend/services.py
 - [ ] T022 [US3] Implement POST /bookings/{booking_id}/cancel (or cancel by workshop+email) in backend/main.py
 - [ ] T023 [US3] Add cancelBooking() to frontend API client and cancel button/action in my-bookings or booking detail UI in frontend/src/
 

@@ -85,6 +85,42 @@ def request_seat(workshop_id: str, email: str) -> tuple[dict | None, str]:
     return booking, "waitlisted"
 
 
+def trigger_slot_released_notification(workshop_id: str, promoted_booking: dict) -> None:
+    """Stub: slot released after promoting first waitlisted. Backend-only; delivery out of scope."""
+    # In a real system: send email, push, etc. For now no-op or log.
+    pass
+
+
+def cancel_booking(booking_id: str) -> tuple[dict | None, str, dict | None]:
+    """
+    Cancel a booking by id. If it was confirmed and the workshop has waitlisted users,
+    promote the first waitlisted and trigger slot-released notification.
+    Returns (cancelled_booking, outcome, promoted_booking_or_none).
+    Outcome: "cancelled" | "not_found" | "invalid_state"
+    """
+    booking = get_booking_by_id(booking_id)
+    if not booking:
+        return None, "not_found", None
+    if booking.get("state") not in ("confirmed", "waitlisted"):
+        return None, "invalid_state", None
+
+    workshop_id = booking["workshop_id"]
+    was_confirmed = booking.get("state") == "confirmed"
+    update_booking_state(booking_id, "cancelled", None)
+    promoted = None
+
+    if was_confirmed:
+        waitlisted = [b for b in get_bookings_by_workshop(workshop_id) if b.get("state") == "waitlisted"]
+        waitlisted.sort(key=lambda b: b.get("position") or 0)
+        if waitlisted:
+            first = waitlisted[0]
+            update_booking_state(first["id"], "confirmed", None)
+            promoted = first
+            trigger_slot_released_notification(workshop_id, first)
+
+    return booking, "cancelled", promoted
+
+
 def load_workshops() -> list[dict]:
     """Load workshops from JSON file. Returns list of dicts (id, title, date_time, capacity)."""
     path = Path(WORKSHOPS_JSON)

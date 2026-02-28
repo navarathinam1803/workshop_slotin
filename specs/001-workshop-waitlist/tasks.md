@@ -66,7 +66,7 @@
 
 **Independent Test**: Request seat when capacity available → confirmed; when full → waitlist position. View bookings by email → see state and position.
 
-- [ ] T015 [US2] Implement request-seat logic (confirm or waitlist, first-request-wins) in backend/services.py
+- [x] T015 [US2] Implement request-seat logic (confirm or waitlist, first-request-wins) in backend/services.py
 - [ ] T016 [US2] Implement POST /workshops/{workshop_id}/request-seat with email body in backend/main.py
 - [ ] T017 [US2] Implement GET /bookings?email= in backend/main.py returning user's bookings with workshop summary
 - [ ] T018 [US2] Add requestSeat() and getMyBookings(email) to frontend/src/services/api.js

@@ -1,50 +1,61 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!-- Project Constitution — The Workshop SlotIn -->
 
-## Core Principles
+This document is the authoritative guide for architecture, security, development standards, and non-goals for "The Workshop SlotIn" repository. As a course demo project, clarity and simplicity are prioritized over enterprise scale.
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+## Table of contents
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+- Project Overview
+- Core Tech Stack
+- Architectural Principles
+- Security & Integrity
+- Development Standards
+- Non-Goals & Constraints
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+---
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+## Project Overview
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+"The Workshop SlotIn" is a web application for workshop sign-up with waitlist and slot-release behavior. It features:
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+- **Workshop catalog** — list workshops with title, date/time, capacity, and current confirmed + waitlisted counts.
+- **Sign-up & waitlist** — request a seat (confirmed when capacity allows; otherwise join waitlist with position).
+- **Slot released** — when a confirmed participant cancels, the first waitlisted user is promoted and notified (via backend).
+- **Cancellation & refund rules** — refund window (e.g. cancel ≥24h before start) vs no-refund (last-minute); no-show handling.
+- **Notifications** — all email/calendar/notification sending is done by the backend only; the frontend never calls external notification APIs.
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+## Core Tech Stack
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+- **Frontend:** React (Vite) with Tailwind CSS and Lucide React icons.
+- **Backend:** Python 3.10+ with FastAPI.
+- **Persistence:** In-memory Python structures or simple local JSON files (no external database).
+- **Validation:** Pydantic v2 for request/response and business rules.
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+## Architectural Principles
 
-## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
+- **Separation of concerns:** The frontend must never call third-party APIs (email, calendar, SMS, etc.) directly. All notifications and external integrations are proxied through the backend.
+- **Frontend as client:** The frontend only reads and updates data via the backend API (list workshops, request seat, cancel, view my bookings and waitlist position).
+- **Simplicity over scale:** Keep backend logic consolidated (e.g. `main.py` for routes, `services.py` for workshop/waitlist/refund logic). Avoid unnecessary folder depth.
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+## Security & Integrity
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+- **No authentication:** The app is open and requires no login (demo-only constraint).
+- **Secrets management:** Any API keys (e.g. for email or notifications) must be loaded from a `.env` file. Never commit secrets to the repository.
+- **Input hygiene:** Use Pydantic to validate all request payloads (sign-up, cancel, admin actions) before applying business logic.
+
+## Development Standards
+
+- **Testing:** Provide unit tests for workshop capacity, waitlist promotion, and refund-window logic using `pytest`.
+- **Formatting:** Use Prettier for frontend code and `black`/`ruff` for Python.
+- **Documentation:** Include comments that explain why specific Spec-Kit commands were used (for educational purposes).
+
+## Non-Goals & Constraints
+
+- **No external databases:** Do not install or configure MongoDB, PostgreSQL, or SQLite; use in-memory or local JSON only.
+- **No user accounts:** Do not implement JWT, OAuth, or session cookies.
+- **No Redux:** Use React `useState` and `useContext` instead of Redux.
+- **No class components:** Use React hooks only.
+- **No manual styling:** All styles must use Tailwind utility classes.
+
+---
+
+**Version:** 1.0.0 (Demo Edition)  •  **Ratified:** 2026-01-09

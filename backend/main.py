@@ -4,7 +4,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from models import RequestSeatRequest
-from services import get_bookings_by_workshop, load_workshops, request_seat
+from services import (
+    get_bookings_by_email,
+    get_bookings_by_workshop,
+    load_workshops,
+    request_seat,
+)
 
 app = FastAPI(
     title="Workshop SlotIn API",
@@ -65,3 +70,23 @@ def request_seat_endpoint(workshop_id: str, body: RequestSeatRequest):
         "position": booking.get("position"),
     }
     return JSONResponse(content=content, status_code=status)
+
+
+@app.get("/bookings")
+def list_my_bookings(email: str):
+    """Return bookings for the given email with workshop_title and workshop_date_time."""
+    bookings = get_bookings_by_email(email)
+    workshops = {w["id"]: w for w in load_workshops()}
+    result = []
+    for b in bookings:
+        ws = workshops.get(b["workshop_id"], {})
+        result.append({
+            "id": b["id"],
+            "workshop_id": b["workshop_id"],
+            "email": b["email"],
+            "state": b["state"],
+            "position": b.get("position"),
+            "workshop_title": ws.get("title", ""),
+            "workshop_date_time": ws.get("date_time"),
+        })
+    return result

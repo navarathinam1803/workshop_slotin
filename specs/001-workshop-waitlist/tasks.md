@@ -111,8 +111,8 @@
 **Independent Test**: Open /admin → mark confirmed booking no-show → state recorded; no promotion.
 
 - [x] T026 [US5] Implement POST /admin/bookings/{booking_id}/no-show in backend/main.py
-- [ ] T027 [US5] Create Admin page at route /admin with list of confirmed bookings and no-show action in frontend/src/pages/Admin.jsx (or equivalent)
-- [ ] T028 [US5] Add noShowBooking() to frontend API client and wire admin page to backend
+- [x] T027 [US5] Create Admin page at route /admin with list of confirmed bookings and no-show action in frontend/src/pages/Admin.jsx (or equivalent)
+- [x] T028 [US5] Add noShowBooking() to frontend API client and wire admin page to backend
 
 **Checkpoint**: All user stories complete
 

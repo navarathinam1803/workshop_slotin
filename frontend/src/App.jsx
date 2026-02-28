@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import MyBookings from './components/MyBookings'
 import RequestSeatForm from './components/RequestSeatForm'
 import WorkshopList from './components/WorkshopList'
@@ -19,8 +20,15 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-50 p-6">
-      <h1 className="text-2xl font-semibold text-slate-800">Workshop SlotIn</h1>
-      <p className="mt-2 text-slate-600">Browse workshops and see availability.</p>
+      <div className="mb-4 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-slate-800">Workshop SlotIn</h1>
+          <p className="mt-2 text-slate-600">Browse workshops and see availability.</p>
+        </div>
+        <Link to="/admin" className="text-slate-600 hover:text-slate-800">
+          Admin
+        </Link>
+      </div>
 
       {loading && <p className="mt-4 text-slate-500">Loading workshops…</p>}
       {error && (

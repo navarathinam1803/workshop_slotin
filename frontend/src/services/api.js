@@ -40,3 +40,20 @@ export async function cancelBooking(bookingId) {
   }
   return res.json();
 }
+
+export async function getAdminBookings() {
+  const res = await fetch(`${API_BASE}/admin/bookings`);
+  if (!res.ok) throw new Error(`Admin bookings: ${res.status}`);
+  return res.json();
+}
+
+export async function noShowBooking(bookingId) {
+  const res = await fetch(`${API_BASE}/admin/bookings/${bookingId}/no-show`, {
+    method: 'POST',
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `Mark no-show: ${res.status}`);
+  }
+  return res.json();
+}

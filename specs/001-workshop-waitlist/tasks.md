@@ -123,7 +123,7 @@
 **Purpose**: Tests, validation, and cleanup
 
 - [x] T029 [P] Add unit tests for workshop capacity, waitlist promotion, and refund-window logic in backend/tests/test_services.py
-- [ ] T030 Run quickstart.md validation (backend + frontend start, manual test scenarios) and fix if needed
+- [x] T030 Run quickstart.md validation (backend + frontend start, manual test scenarios) and fix if needed
 - [ ] T031 [P] Add .env.example for backend (API keys placeholder) and document in README or quickstart
 
 ---

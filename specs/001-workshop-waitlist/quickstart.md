@@ -15,9 +15,9 @@ Minimal steps to run and manually test the feature after implementation.
 1. From repo root: `cd backend`
 2. Create virtualenv: `python -m venv .venv` (or use uv/poetry per team).
 3. Activate: `source .venv/bin/activate` (or `.venv\Scripts\activate` on Windows).
-4. Install: `pip install fastapi uvicorn pydantic`
-5. Ensure `workshops.json` exists or is created on first run (see data-model: workshops persisted to JSON).
-6. Run: `uvicorn main:app --reload` (or `python -m uvicorn main:app --reload`). Default: `http://localhost:8000`.
+4. Install: `pip install -r requirements.txt` (or `pip install fastapi uvicorn pydantic pydantic[email] email-validator pytest`).
+5. Ensure `workshops.json` exists in `backend/` (see data-model; repo may include a sample). Optional: copy from `backend/workshops.json` if present.
+6. Run: `uvicorn main:app --reload` (or `python -m uvicorn main:app --reload`). Default: `http://localhost:8000`. Run from `backend/` so `workshops.json` is found.
 
 ## Frontend
 

@@ -98,7 +98,7 @@
 **Independent Test**: Cancel ≥24h before start → refund info in response (pro-rata); cancel <24h → no refund, cancellation only.
 
 - [x] T024 [US4] Implement refund window (24h) and pro-rata-by-time logic (e.g. 7 days = full, 3 days = 50%) in backend/services.py
-- [ ] T025 [US4] Return refund_percentage or refund info in cancel response when within window; show refund message in frontend after cancel
+- [x] T025 [US4] Return refund_percentage or refund info in cancel response when within window; show refund message in frontend after cancel
 
 **Checkpoint**: User Stories 1–4 complete — refund rules enforced
 

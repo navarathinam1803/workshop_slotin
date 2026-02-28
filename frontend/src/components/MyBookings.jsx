@@ -17,11 +17,13 @@ export default function MyBookings() {
   const [error, setError] = useState(null)
   const [bookings, setBookings] = useState(null)
   const [cancellingId, setCancellingId] = useState(null)
+  const [cancelMessage, setCancelMessage] = useState(null)
 
   async function handleLoad(e) {
     e.preventDefault()
     if (!email.trim()) return
     setError(null)
+    setCancelMessage(null)
     setBookings(null)
     setLoading(true)
     try {
@@ -36,9 +38,16 @@ export default function MyBookings() {
 
   async function handleCancel(bookingId) {
     setError(null)
+    setCancelMessage(null)
     setCancellingId(bookingId)
     try {
-      await cancelBooking(bookingId)
+      const res = await cancelBooking(bookingId)
+      const pct = res?.refund_percentage
+      const msg =
+        typeof pct === 'number' && pct > 0
+          ? `Cancelled. Refund: ${pct}%.`
+          : 'Cancelled. No refund (within 24h of start).'
+      setCancelMessage(msg)
       if (email.trim()) {
         const data = await getMyBookings(email.trim())
         setBookings(data)
@@ -77,6 +86,9 @@ export default function MyBookings() {
         </button>
       </form>
       {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
+      {cancelMessage && (
+        <p className="mt-3 text-sm font-medium text-green-700">{cancelMessage}</p>
+      )}
       {bookings && (
         <ul className="mt-4 space-y-3">
           {bookings.length === 0 ? (

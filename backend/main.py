@@ -6,6 +6,7 @@ from fastapi.responses import JSONResponse
 from models import RequestSeatRequest
 from services import (
     cancel_booking,
+    compute_refund,
     get_bookings_by_email,
     get_bookings_by_workshop,
     load_workshops,
@@ -88,6 +89,9 @@ def cancel_booking_endpoint(booking_id: str):
     }
     if promoted:
         content["promoted_booking_id"] = promoted["id"]
+    refund = compute_refund(cancelled["workshop_id"])
+    if refund is not None:
+        content["refund_percentage"] = refund["refund_percentage"]
     return content
 
 

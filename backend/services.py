@@ -2,8 +2,13 @@
 import json
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
+
+# Refund window: ≥24h before start = pro-rata; <24h = no refund. Pro-rata: 7 days = 100%, 3 days = 50%, 1 day = 0%.
+REFUND_WINDOW_HOURS = 24
+REFUND_FULL_DAYS = 7
+REFUND_HALF_DAYS = 3
 
 # Configurable path for workshops JSON (default: same dir as this file, workshops.json)
 WORKSHOPS_JSON = os.environ.get("WORKSHOPS_JSON", str(Path(__file__).resolve().parent / "workshops.json"))
@@ -137,3 +142,47 @@ def save_workshops(workshops: list[dict]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         json.dump(workshops, f, indent=2, default=str)
+
+
+def _parse_workshop_start(date_time: str | None) -> datetime | None:
+    """Parse workshop date_time (ISO string) to naive UTC datetime. Returns None if missing/invalid."""
+    if not date_time:
+        return None
+    try:
+        if isinstance(date_time, datetime):
+            dt = date_time
+        else:
+            dt = datetime.fromisoformat(str(date_time).replace("Z", "+00:00"))
+        if dt.tzinfo:
+            dt = dt.astimezone(timezone.utc).replace(tzinfo=None)
+        return dt
+    except (TypeError, ValueError):
+        return None
+
+
+def compute_refund(workshop_id: str) -> dict | None:
+    """
+    Compute refund for a cancellation now. ≥24h before start = pro-rata (e.g. 7 days = 100%, 3 days = 50%);
+    <24h = no refund. Returns {"refund_percentage": int} or None when workshop not found / no date.
+    """
+    workshops = load_workshops()
+    workshop = next((w for w in workshops if w.get("id") == workshop_id), None)
+    if not workshop:
+        return None
+    start = _parse_workshop_start(workshop.get("date_time"))
+    if not start:
+        return None
+    now = datetime.utcnow()
+    hours_until = (start - now).total_seconds() / 3600
+    if hours_until < REFUND_WINDOW_HOURS:
+        return {"refund_percentage": 0}
+    days_until = hours_until / 24
+    if days_until >= REFUND_FULL_DAYS:
+        return {"refund_percentage": 100}
+    if days_until >= REFUND_HALF_DAYS:
+        pct = 50 + (days_until - REFUND_HALF_DAYS) / (REFUND_FULL_DAYS - REFUND_HALF_DAYS) * 50
+        return {"refund_percentage": round(min(100, max(0, pct)))}
+    if days_until >= 1:
+        pct = (days_until - 1) / (REFUND_HALF_DAYS - 1) * 50
+        return {"refund_percentage": round(min(50, max(0, pct)))}
+    return {"refund_percentage": 0}

@@ -2,4 +2,4 @@
 # Constitution: Python 3.10+, FastAPI, Pydantic v2
 fastapi>=0.109.0
 uvicorn[standard]>=0.27.0
-pydantic>=2.5.0
+pydantic[email-validator]>=2.5.0
